@@ -23,7 +23,7 @@ namespace WinTask
             TaskBinary taskB = new TaskBinary();
             string result = taskB.RunCommand("export");
             Debug.WriteLine(result);
-            IList<TaskItem> tasks = new List<TaskItem>();
+     
 
             JsonTextReader reader = new JsonTextReader(new StringReader(result));
             reader.SupportMultipleContent = true;
@@ -38,14 +38,11 @@ namespace WinTask
                 JsonSerializer serializer = new JsonSerializer();
                 TaskItem task = serializer.Deserialize<TaskItem>(reader);
 
-                tasks.Add(task);
+                AddChild(task);
+                task.isChanged = false;
             }
 
-            foreach (TaskItem task in tasks)
-            {
-                Debug.WriteLine(task.uuid + " " + task.description);
-                this.AddChild(task);
-            }
+           
 
             Tasks.First().description = "Fuck off";            
             
@@ -79,34 +76,22 @@ namespace WinTask
         public bool isChanged;
         public int id { get; private set; }
         private string _description;
-        private string _descriptionNew;
+       
         public string description
         {
             get
             {
-                if (_descriptionNew == null)
-                {
-                    return _description;
-                }
-                else
-                {
-                    return _descriptionNew;
-                }
+                
+                return _description;
+               
             }
             set
             {
-                if (_description == null)
-                {
-                    _description = value;
-                }
-                else
-                {
-                    _descriptionNew = value;
-                    isChanged = true;
-                }
+                
+                    _description = value;                  
+                    isChanged = true;                
                 OnPropertyChanged("description");
-                Console.WriteLine("desc: " + _description);
-                Console.WriteLine("descNew: " + _descriptionNew);
+                Console.WriteLine("desc: " + _description);             
             }
         }
         public string entry { get; set; }
