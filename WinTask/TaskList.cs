@@ -12,12 +12,16 @@ namespace WinTask
 {
     class TaskList
     {
-        public SortableSearchableList<TaskItem> Tasks = new SortableSearchableList<TaskItem>();
         List<EventHandler<PropertyChangedEventArgs>> changedHandlers =
             new List<EventHandler<PropertyChangedEventArgs>>();
         public List<string> Projects = new List<string>();
         
-        
+        public List<TaskItem> Tasks { get; private set; }
+
+        public TaskList()
+        {
+            Tasks = new List<TaskItem>();
+        }
         public void Update()
         {
             Tasks.Clear();   

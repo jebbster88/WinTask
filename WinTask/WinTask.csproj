@@ -61,7 +61,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SortableSearchableList.cs" />
+    <Compile Include="SortableBindingList.cs" />
     <Compile Include="TaskBinary.cs" />
     <Compile Include="TaskList.cs" />
     <EmbeddedResource Include="MainForm.resx">

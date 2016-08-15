@@ -36,9 +36,12 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.taskGrid = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.comboProject = new System.Windows.Forms.ComboBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.txtCommand = new System.Windows.Forms.TextBox();
-            this.comboProject = new System.Windows.Forms.ComboBox();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showCompletedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showDeletedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.taskGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -50,7 +53,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(981, 24);
@@ -134,6 +138,17 @@
             this.splitContainer1.SplitterDistance = 489;
             this.splitContainer1.TabIndex = 2;
             // 
+            // comboProject
+            // 
+            this.comboProject.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.comboProject.CausesValidation = false;
+            this.comboProject.FormattingEnabled = true;
+            this.comboProject.Location = new System.Drawing.Point(14, 39);
+            this.comboProject.Name = "comboProject";
+            this.comboProject.Size = new System.Drawing.Size(121, 21);
+            this.comboProject.TabIndex = 1;
+            this.comboProject.SelectedIndexChanged += new System.EventHandler(this.comboProject_SelectedIndexChanged);
+            // 
             // txtDescription
             // 
             this.txtDescription.Location = new System.Drawing.Point(14, 12);
@@ -151,16 +166,30 @@
             this.txtCommand.Size = new System.Drawing.Size(951, 20);
             this.txtCommand.TabIndex = 3;
             // 
-            // comboProject
+            // viewToolStripMenuItem
             // 
-            this.comboProject.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.comboProject.CausesValidation = false;
-            this.comboProject.FormattingEnabled = true;
-            this.comboProject.Location = new System.Drawing.Point(14, 39);
-            this.comboProject.Name = "comboProject";
-            this.comboProject.Size = new System.Drawing.Size(121, 21);
-            this.comboProject.TabIndex = 1;
-            this.comboProject.SelectedIndexChanged += new System.EventHandler(this.comboProject_SelectedIndexChanged);
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showCompletedToolStripMenuItem,
+            this.showDeletedToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // showCompletedToolStripMenuItem
+            // 
+            this.showCompletedToolStripMenuItem.CheckOnClick = true;
+            this.showCompletedToolStripMenuItem.Name = "showCompletedToolStripMenuItem";
+            this.showCompletedToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.showCompletedToolStripMenuItem.Text = "Show Completed";
+            this.showCompletedToolStripMenuItem.Click += new System.EventHandler(this.showCompletedToolStripMenuItem_Click);
+            // 
+            // showDeletedToolStripMenuItem
+            // 
+            this.showDeletedToolStripMenuItem.CheckOnClick = true;
+            this.showDeletedToolStripMenuItem.Name = "showDeletedToolStripMenuItem";
+            this.showDeletedToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.showDeletedToolStripMenuItem.Text = "Show Deleted";
+            this.showDeletedToolStripMenuItem.Click += new System.EventHandler(this.showDeletedToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -199,6 +228,9 @@
         private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.ComboBox comboProject;
         private System.Windows.Forms.TextBox txtCommand;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showCompletedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showDeletedToolStripMenuItem;
     }
 }
 

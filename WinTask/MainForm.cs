@@ -17,12 +17,14 @@ namespace WinTask
         TaskList tlist = new TaskList();
         BindingSource taskBS = new BindingSource();
         BindingSource tasklistBS = new BindingSource();
+        SortableBindingList<TaskItem> filteredTaskList;
 
         public MainForm()
         {
             InitializeComponent();
             tlist.Update();
-            tasklistBS.DataSource = tlist.Tasks;
+            filteredTaskList = new SortableBindingList<TaskItem>(tlist.Tasks.Where(x=> (x.status != "completed")).ToList());
+            tasklistBS.DataSource = filteredTaskList; // tlist.Tasks;
             taskGrid.AutoGenerateColumns = false;
             taskGrid.Columns.Add("id", "ID");
             taskGrid.Columns.Add("description", "Description");
@@ -45,7 +47,8 @@ namespace WinTask
                 comboProject.Items.Add(project);
             }
             comboProject.DataBindings.Add("SelectedItem", taskBS, "Project", false, DataSourceUpdateMode.OnPropertyChanged);
-            //txtCommand.DataBindings.Add("Text", taskBS, "TaskCommand");
+
+            txtCommand.DataBindings.Add("Text", taskBS, "TaskCommand");
         }
 
 
@@ -65,6 +68,31 @@ namespace WinTask
         private void comboProject_SelectedIndexChanged(object sender, EventArgs e)
         {
             comboProject.DataBindings[0].WriteValue();
+        }
+
+        private void filterGrid()
+        {
+            List<TaskItem> l = tlist.Tasks;
+            if (!showDeletedToolStripMenuItem.Checked)
+            {
+                l = l.Where(x => x.status != "deleted").ToList();
+            }
+            if (!showCompletedToolStripMenuItem.Checked)
+            {
+                l = l.Where(x => x.status != "completed").ToList();
+            }
+            filteredTaskList = new SortableBindingList<TaskItem>(l);
+            tasklistBS.DataSource = filteredTaskList; // tlist.Tasks;
+        }
+
+        private void showCompletedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filterGrid();
+        }
+
+        private void showDeletedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filterGrid();
         }
     }
 }
