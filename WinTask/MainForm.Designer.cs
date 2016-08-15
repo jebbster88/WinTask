@@ -37,6 +37,8 @@
             this.taskGrid = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtDescription = new System.Windows.Forms.TextBox();
+            this.txtCommand = new System.Windows.Forms.TextBox();
+            this.comboProject = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.taskGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -126,6 +128,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.comboProject);
             this.splitContainer1.Panel2.Controls.Add(this.txtDescription);
             this.splitContainer1.Size = new System.Drawing.Size(957, 411);
             this.splitContainer1.SplitterDistance = 489;
@@ -138,11 +141,33 @@
             this.txtDescription.Size = new System.Drawing.Size(447, 20);
             this.txtDescription.TabIndex = 0;
             // 
+            // txtCommand
+            // 
+            this.txtCommand.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCommand.Enabled = false;
+            this.txtCommand.Location = new System.Drawing.Point(15, 455);
+            this.txtCommand.Name = "txtCommand";
+            this.txtCommand.Size = new System.Drawing.Size(951, 20);
+            this.txtCommand.TabIndex = 3;
+            // 
+            // comboProject
+            // 
+            this.comboProject.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.comboProject.CausesValidation = false;
+            this.comboProject.FormattingEnabled = true;
+            this.comboProject.Location = new System.Drawing.Point(14, 39);
+            this.comboProject.Name = "comboProject";
+            this.comboProject.Size = new System.Drawing.Size(121, 21);
+            this.comboProject.TabIndex = 1;
+            this.comboProject.SelectedIndexChanged += new System.EventHandler(this.comboProject_SelectedIndexChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(981, 526);
+            this.Controls.Add(this.txtCommand);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -172,6 +197,8 @@
         private System.Windows.Forms.DataGridView taskGrid;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TextBox txtDescription;
+        private System.Windows.Forms.ComboBox comboProject;
+        private System.Windows.Forms.TextBox txtCommand;
     }
 }
 

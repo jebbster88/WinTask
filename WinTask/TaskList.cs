@@ -15,6 +15,7 @@ namespace WinTask
         public SortableSearchableList<TaskItem> Tasks = new SortableSearchableList<TaskItem>();
         List<EventHandler<PropertyChangedEventArgs>> changedHandlers =
             new List<EventHandler<PropertyChangedEventArgs>>();
+        public List<string> Projects = new List<string>();
         
         
         public void Update()
@@ -23,7 +24,6 @@ namespace WinTask
             TaskBinary taskB = new TaskBinary();
             string result = taskB.RunCommand("export");
             Debug.WriteLine(result);
-            IList<TaskItem> tasks = new List<TaskItem>();
 
             JsonTextReader reader = new JsonTextReader(new StringReader(result));
             reader.SupportMultipleContent = true;
@@ -38,93 +38,102 @@ namespace WinTask
                 JsonSerializer serializer = new JsonSerializer();
                 TaskItem task = serializer.Deserialize<TaskItem>(reader);
 
-                tasks.Add(task);
+                AddChild(task);
             }
-
-            foreach (TaskItem task in tasks)
-            {
-                Debug.WriteLine(task.uuid + " " + task.description);
-                this.AddChild(task);
-            }
-
-            Tasks.First().description = "Fuck off";            
-            
-
-
         }
         public void AddChild(TaskItem newChild)
         {
             // Omitted: error checking, and ensuring newChild isn't already in the list
-            this.Tasks.Add(newChild);
-            newChild.PropertyChanged += new PropertyChangedEventHandler(ChildChanged);
-            
-        }
-
-        public void ChildChanged(object sender, PropertyChangedEventArgs e)
-        {
-            TaskItem child = sender as TaskItem;
-            if (this.Tasks.Contains(child))
+            Tasks.Add(newChild);
+            if (newChild.project != null && !(Projects.Contains(newChild.project)))
             {
-                Debug.WriteLine(child);
-                Debug.WriteLine("Is Changed");
-                Debug.WriteLine(e.PropertyName);
-
+                Projects.Add(newChild.project);
+                Projects.Sort();
             }
         }
+
     }
 
     public class TaskItem
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public bool isChanged;
-        public int id { get; private set; }
-        private string _description;
-        private string _descriptionNew;
-        public string description
-        {
-            get
-            {
-                if (_descriptionNew == null)
-                {
-                    return _description;
-                }
-                else
-                {
-                    return _descriptionNew;
-                }
-            }
-            set
-            {
-                if (_description == null)
-                {
-                    _description = value;
-                }
-                else
-                {
-                    _descriptionNew = value;
-                    isChanged = true;
-                }
-                OnPropertyChanged("description");
-                Console.WriteLine("desc: " + _description);
-                Console.WriteLine("descNew: " + _descriptionNew);
-            }
-        }
+        public int id { get; set; }
+        public string description { get; set; }
         public string entry { get; set; }
         public string modified { get; set; }
         public string project { get; set; }
         public string status { get; set; }
         public string uuid { get; set; }
         public double urgency { get; set; }
+        
+    }
+    public class EditTaskItem : TaskItem
+    {
+        private enum TaskProp
+        {            
+            Description = 0,
+            Project = 1
+        }
 
-        protected void OnPropertyChanged(string name)
+        private SortedDictionary<TaskProp, string> Changes = new SortedDictionary<TaskProp, string>();
+        private string _Description;
+        public string Description
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
+            get { return _Description ?? description; }
+            set { _Description = value; ModifyProperty(TaskProp.Description, value); }
+        }
+        private string _Project;
+        public string Project
+        {
+            get { return _Project ?? project; }
+            set { if (value != project) { _Project = value; ModifyProperty(TaskProp.Project, value); } }
+        }
+        public string TaskCommand
+        {
+            get { return "task " + BuildTaskString(); }
+        }
+        public EditTaskItem(TaskItem source)
+        {
+            if(source != null)
             {
-                handler(this, new PropertyChangedEventArgs(name));
+                id = source.id;
+                description = source.description;
+                entry = source.entry;
+                modified = source.modified;
+                project = source.project;
+                status = source.status;
+                uuid = source.uuid;
+                urgency = source.urgency;
             }
         }
-        
+
+        private string BuildTaskString()
+        {
+            string strCommand = "mod " + uuid + " ";
+            foreach (KeyValuePair<TaskProp, string> entry in Changes)
+            {
+                switch (entry.Key)
+                {
+                    case TaskProp.Description:
+                        strCommand += entry.Value + " ";
+                        break;
+                    case TaskProp.Project:
+                        strCommand += "pro:" + entry.Value + " ";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Debug.WriteLine(strCommand);
+            return strCommand;
+        }
+       
+
+        private void ModifyProperty(TaskProp property, string value)
+        {
+            Changes[property] = value;
+            Debug.WriteLine(Changes.Keys.Count);
+            Debug.WriteLine(BuildTaskString());
+        }
     }
 
 }

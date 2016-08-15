@@ -26,16 +26,28 @@ namespace WinTask
             taskGrid.AutoGenerateColumns = false;
             taskGrid.Columns.Add("id", "ID");
             taskGrid.Columns.Add("description", "Description");
+            taskGrid.Columns.Add("project", "Project");
+            taskGrid.Columns.Add("urgency", "Urg");
             taskGrid.Columns["id"].DataPropertyName = "id";
             taskGrid.Columns["description"].DataPropertyName = "description";
+            taskGrid.Columns["project"].DataPropertyName = "project";
+            taskGrid.Columns["urgency"].DataPropertyName = "urgency";
             foreach (DataGridViewColumn col in taskGrid.Columns)
             {
                 col.SortMode = DataGridViewColumnSortMode.Automatic;
             }
             taskGrid.DataSource = tasklistBS;
-            taskBS.DataSource = tlist.Tasks.First();
+            taskGrid.CurrentCell = taskGrid[0,0];
             txtDescription.DataBindings.Add("Text", taskBS, "Description", false, DataSourceUpdateMode.OnPropertyChanged);
+            foreach (string project in tlist.Projects)
+            {
+                Debug.WriteLine(project);
+                comboProject.Items.Add(project);
+            }
+            comboProject.DataBindings.Add("SelectedItem", taskBS, "Project", false, DataSourceUpdateMode.OnPropertyChanged);
+            //txtCommand.DataBindings.Add("Text", taskBS, "TaskCommand");
         }
+
 
         private void taskGrid_CurrentCellChanged(object sender, EventArgs e)
         {
@@ -43,9 +55,16 @@ namespace WinTask
             if (taskGrid.SelectedRows.Count > 0)
             {
                 TaskItem task = taskGrid.SelectedRows[0].DataBoundItem as TaskItem;
-                Debug.WriteLine(task.description);
-                taskBS.DataSource = task;
+                EditTaskItem edittask = new EditTaskItem(task);
+                Debug.WriteLine(edittask.Description);
+                Debug.WriteLine(edittask.Project);
+                taskBS.DataSource = edittask;
             }
+        }
+
+        private void comboProject_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboProject.DataBindings[0].WriteValue();
         }
     }
 }
