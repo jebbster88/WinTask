@@ -23,7 +23,7 @@ namespace WinTask
         {
             InitializeComponent();
             tlist.Update();
-            filteredTaskList = new SortableBindingList<TaskItem>(tlist.Tasks.Where(x=> (x.status != "completed")).ToList());
+            filteredTaskList = new SortableBindingList<TaskItem>(tlist.Tasks.Where(x=> (x.Status != "completed")).ToList());
             tasklistBS.DataSource = filteredTaskList; // tlist.Tasks;
             taskGrid.AutoGenerateColumns = false;
             taskGrid.Columns.Add("id", "ID");

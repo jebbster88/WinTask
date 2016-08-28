@@ -15,13 +15,8 @@ using System.Windows.Input;
 
 namespace WinTask
 {
-    public class TaskItem : INotifyPropertyChanged
+    public class TaskData
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
         public int id { get; set; }
         public string description { get; set; }
         public string due { get; set; }
@@ -33,52 +28,73 @@ namespace WinTask
         public double urgency { get; set; }
         public List<string> tags { get; set; } // Implement something like this http://stackoverflow.com/questions/15167809/how-can-i-create-a-tagging-control-similar-to-evernote-in-wpf or https://github.com/niieani/TokenizedInputCs
 
-        public TaskItem()
-        {
+        public bool HasSetValues { get { return (description != null || due != null || entry != null || project != null || status != null); } }
+
+        public TaskData() {
             tags = new List<string>();
         }
-       
-
-        private enum TaskProp
+    }
+    public class TaskItem : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            Description = 0,
-            Project = 1,
-            Due = 2,
-            Status = 3,
-            Tags = 4
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private string writepattern = "yyyy-MM-dd'T'HH:mm:ss";
-        private string readpattern = "yyyyMMdd'T'HHmmss'Z'";
 
-        private SortedDictionary<TaskProp, string> Changes = new SortedDictionary<TaskProp, string>();
-        private string _Description;
+        public TaskData BaseData = new TaskData();
+        public TaskData ChangedData = new TaskData();
+
+        public TaskItem()
+        {
+            Debug.WriteLine("Birgin Here");
+            TaskData BaseData = new TaskData();
+        }     
+
+        const string writepattern = "yyyy-MM-dd'T'HH:mm:ss";
+        const string readpattern = "yyyyMMdd'T'HHmmss'Z'";
+
+        public int ID
+        {
+            get { return BaseData.id; }
+        }
+        public double Urgency
+        {
+            get
+            {
+                return BaseData.urgency;
+            }
+        }
+
         public string Description
         {
-            get { return _Description ?? description; }
-            set { _Description = value; ModifyProperty(TaskProp.Description, value); }
+            get { return ChangedData.description ?? BaseData.description; }
+            set { ChangedData.description = value; ModifyProperty(); }
         }
-        private string _Project;
         public string Project
         {
-            get { return _Project ?? project; }
-            set { if (value != project) { _Project = value; ModifyProperty(TaskProp.Project, value); } }
+            get { return ChangedData.project ?? BaseData.project; }
+            set { if (value == BaseData.project) { ChangedData.project = null; } else { ChangedData.project = value; ModifyProperty(); } }
         }
-        private DateTime? _Due;
-
 
         public DateTime? Due
         {
             get
             {
-                if (_Due != null)
+                if (ChangedData.due != null)
                 {
-                    return _Due;
+                    DateTime retDate;
+                    if (DateTime.TryParseExact(ChangedData.due, readpattern, null, DateTimeStyles.None, out retDate))
+                    {
+                        return retDate;
+                    }
+                    else return null;
                 }
                 else
                 {
                     DateTime retDate;
-                    if (DateTime.TryParseExact(due, readpattern, null, DateTimeStyles.None, out retDate))
+                    if (DateTime.TryParseExact(BaseData.due, readpattern, null, DateTimeStyles.None, out retDate))
                     {
                         return retDate;
                     }
@@ -88,26 +104,23 @@ namespace WinTask
 
             set
             {
-                string duestring = "";
                 if (value == null)
                 {
-                    _Due = value;
+                    ChangedData.due = "";
                 }
                 else
                 {
                     DateTime newDate = (DateTime)value;
-                    _Due = newDate;
-                    duestring = newDate.ToString(writepattern, CultureInfo.InvariantCulture);
+                    ChangedData.due = newDate.ToString(writepattern, CultureInfo.InvariantCulture);
                 }
-                ModifyProperty(TaskProp.Due, duestring);
+                ModifyProperty();
             }
         }
 
-        private string _Status;
         public string Status
         {
-            get { return _Status ?? status; }
-            set { _Status = value; ModifyProperty(TaskProp.Status, value); }
+            get { Debug.WriteLine(BaseData.status); return ChangedData.status ?? BaseData.status; }
+            set { ChangedData.status = value; ModifyProperty(); }
         }
         public bool Completed
         {
@@ -119,55 +132,32 @@ namespace WinTask
         {
             get
             {
-                if (Changes.Count > 0)
-                {
-                    return BuildTaskString();
-                }
-                else
-                {
-                    return null;
-                }
+                string ret = (ChangedData.HasSetValues) ? BuildTaskString() : null;
+                return ret;
             }
         }
         public string TaskCommand {
-            get { return "Task " + taskCommand; } }
+            get { if (taskCommand != null) { return "Task " + taskCommand; } else { return null; } }
+        }
 
         private string BuildTaskString()
         {
             string rcdateformat = "rc.dateformat:Y-M-DTH:N:S";
-            string strCommand = uuid + " mod " + " ";
+            string strCommand = BaseData.uuid + " mod " + " ";
             bool hasdate = false;
-            foreach (KeyValuePair<TaskProp, string> entry in Changes)
-            {
-                switch (entry.Key)
-                {
-                    case TaskProp.Description:
-                        strCommand += entry.Value + " ";
-                        break;
-                    case TaskProp.Project:
-                        strCommand += "pro:" + entry.Value + " ";
-                        break;
-                    case TaskProp.Due:
-                        strCommand += "due:" + entry.Value + " ";
-                        hasdate = true;
-                        break;
-                    case TaskProp.Status:
-                        strCommand += "status:" + entry.Value + " ";
-                        break;
-                    default:
-                        break;
-                }
-            }
+            if (ChangedData.description != null) { strCommand += ChangedData.description + " "; }
+            if (ChangedData.project != null) { strCommand += "project:" + ChangedData.project + " "; }
+            if (ChangedData.due != null) { strCommand += "due:" + ChangedData.due; hasdate = true; }
+            if (ChangedData.status != null) { strCommand += "status:" + ChangedData.status; }
             if (hasdate) { strCommand += rcdateformat; }
             Debug.WriteLine(strCommand);
             return strCommand;
         }
 
 
-        private void ModifyProperty(TaskProp property, string value)
+        private void ModifyProperty([CallerMemberName] String propertyName = "")
         {
-            Changes[property] = value;
-            Debug.WriteLine(Changes.Keys.Count);
+            Debug.WriteLine("Property Changed: " + propertyName);
             Debug.WriteLine(BuildTaskString());
             NotifyPropertyChanged("TaskCommand");
         }
@@ -175,7 +165,7 @@ namespace WinTask
         private void Save()
         {
             //Am I a new Task?
-            if (uuid != null)
+            if (BaseData.uuid != null)
             {
                 //Run the update command
                 TaskBinary tbin = new TaskBinary();
@@ -187,7 +177,7 @@ namespace WinTask
             }
         }
 
-        private bool CanSave() { return (Changes.Count > 0); }
+        private bool CanSave() { return (ChangedData.HasSetValues); }
 
         private ICommand _saveCommand;
         public ICommand SaveCommand

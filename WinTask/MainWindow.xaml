@@ -42,19 +42,19 @@
                   VerticalAlignment="Stretch"
                   SelectionChanged="taskGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding id}"
+                <DataGridTextColumn Binding="{Binding ID}"
                                     Header="ID"
                                     Width="22"
                                     CanUserResize="False" />
-                <DataGridTextColumn Binding="{Binding description}"
+                <DataGridTextColumn Binding="{Binding Description}"
                                     Header="Description"
                                     Width="300"
                                     CanUserResize="False" />
-                <DataGridTextColumn Binding="{Binding project}"
+                <DataGridTextColumn Binding="{Binding Project}"
                                     Header="Project"
                                     Width="150"
                                     CanUserResize="False" />
-                <DataGridTextColumn Binding="{Binding urgency, StringFormat={}{0:#,#.0}}"
+                <DataGridTextColumn Binding="{Binding Urgency, StringFormat='{}{0:#,#.0}'}"
                                     Header="Urg"
                                     CanUserResize="False"
                                     Width="30" />

@@ -34,7 +34,7 @@ namespace WinTask
         {
             TaskItem task = item as TaskItem;
             bool show = false;
-            switch (task.status) 
+            switch (task.Status) 
             {
                 case "completed":
                     show = ShowCompleted;
@@ -73,18 +73,22 @@ namespace WinTask
                 }
 
                 JsonSerializer serializer = new JsonSerializer();
-                TaskItem task = serializer.Deserialize<TaskItem>(reader);
+                TaskData task = serializer.Deserialize<TaskData>(reader);
                 Debug.WriteLine(task.tags.Count);
                 AddChild(task);
             }
         }
-        public void AddChild(TaskItem newChild)
+        public void AddChild(TaskData baseData)
         {
             // Omitted: error checking, and ensuring newChild isn't already in the list
+            Debug.WriteLine(baseData.description);
+            TaskItem newChild = new TaskItem();
+            newChild.BaseData = baseData;
+            Debug.WriteLine(newChild.Description);
             Tasks.Add(newChild);
-            if (newChild.project != null && !(_projects.Contains(newChild.project)))
+            if (baseData.project != null && !(_projects.Contains(baseData.project)))
             {
-                _projects.Add(newChild.project);
+                _projects.Add(baseData.project);
                 _projects.Sort();
             }
         }
