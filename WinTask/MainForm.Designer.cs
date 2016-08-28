@@ -42,6 +42,7 @@
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showCompletedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showDeletedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dateTimeDue = new System.Windows.Forms.DateTimePicker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.taskGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -132,6 +133,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.dateTimeDue);
             this.splitContainer1.Panel2.Controls.Add(this.comboProject);
             this.splitContainer1.Panel2.Controls.Add(this.txtDescription);
             this.splitContainer1.Size = new System.Drawing.Size(957, 411);
@@ -181,7 +183,6 @@
             this.showCompletedToolStripMenuItem.Name = "showCompletedToolStripMenuItem";
             this.showCompletedToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.showCompletedToolStripMenuItem.Text = "Show Completed";
-            this.showCompletedToolStripMenuItem.Click += new System.EventHandler(this.showCompletedToolStripMenuItem_Click);
             // 
             // showDeletedToolStripMenuItem
             // 
@@ -189,7 +190,14 @@
             this.showDeletedToolStripMenuItem.Name = "showDeletedToolStripMenuItem";
             this.showDeletedToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.showDeletedToolStripMenuItem.Text = "Show Deleted";
-            this.showDeletedToolStripMenuItem.Click += new System.EventHandler(this.showDeletedToolStripMenuItem_Click);
+            // 
+            // dateTimeDue
+            // 
+            this.dateTimeDue.Location = new System.Drawing.Point(14, 67);
+            this.dateTimeDue.Name = "dateTimeDue";
+            this.dateTimeDue.ShowCheckBox = true;
+            this.dateTimeDue.Size = new System.Drawing.Size(200, 20);
+            this.dateTimeDue.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -231,6 +239,7 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showCompletedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showDeletedToolStripMenuItem;
+        private System.Windows.Forms.DateTimePicker dateTimeDue;
     }
 }
 

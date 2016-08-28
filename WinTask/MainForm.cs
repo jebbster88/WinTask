@@ -47,22 +47,37 @@ namespace WinTask
                 comboProject.Items.Add(project);
             }
             comboProject.DataBindings.Add("SelectedItem", taskBS, "Project", false, DataSourceUpdateMode.OnPropertyChanged);
+            //dateTimeDue.DataBindings.Add("Value", taskBS, "Due", false, DataSourceUpdateMode.OnPropertyChanged); //http://blogs.interknowlogy.com/2007/01/21/winforms-databinding-datetimepicker-to-a-nullable-type/
 
             txtCommand.DataBindings.Add("Text", taskBS, "TaskCommand");
         }
 
-
-        private void taskGrid_CurrentCellChanged(object sender, EventArgs e)
+        //private void PopulateNullableDateControl(DateTime
+        
+        private void PopulateControls()
         {
-            //taskBS.DataSource = taskGrid.CurrentRow.DataBoundItem;
+            /*
             if (taskGrid.SelectedRows.Count > 0)
             {
+                dateTimeDue.DataBindings.Clear();
+                dateTimeDue.Checked = false;
                 TaskItem task = taskGrid.SelectedRows[0].DataBoundItem as TaskItem;
                 EditTaskItem edittask = new EditTaskItem(task);
                 Debug.WriteLine(edittask.Description);
                 Debug.WriteLine(edittask.Project);
                 taskBS.DataSource = edittask;
+                if (edittask.Due != null)
+                {
+                    dateTimeDue.Checked = true;
+                    dateTimeDue.DataBindings.Add("Value", taskBS, "Due", false, DataSourceUpdateMode.OnPropertyChanged);
+                }
             }
+            */
+        }
+        private void taskGrid_CurrentCellChanged(object sender, EventArgs e)
+        {
+            //taskBS.DataSource = taskGrid.CurrentRow.DataBoundItem;
+            PopulateControls();
         }
 
         private void comboProject_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,29 +85,5 @@ namespace WinTask
             comboProject.DataBindings[0].WriteValue();
         }
 
-        private void filterGrid()
-        {
-            List<TaskItem> l = tlist.Tasks;
-            if (!showDeletedToolStripMenuItem.Checked)
-            {
-                l = l.Where(x => x.status != "deleted").ToList();
-            }
-            if (!showCompletedToolStripMenuItem.Checked)
-            {
-                l = l.Where(x => x.status != "completed").ToList();
-            }
-            filteredTaskList = new SortableBindingList<TaskItem>(l);
-            tasklistBS.DataSource = filteredTaskList; // tlist.Tasks;
-        }
-
-        private void showCompletedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            filterGrid();
-        }
-
-        private void showDeletedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            filterGrid();
-        }
     }
 }

@@ -7,13 +7,13 @@ using System.Diagnostics;
 
 namespace WinTask
 {
-    class TaskBinary
+    class TaskBinary 
     {
         string GetBinaryPath()
         {
             return "G:\\babun\\.babun\\cygwin\\bin\\task.exe";
         }
-
+        //task add test23 rc.verbose=new-uuid
         Process p;
 
         public TaskBinary()

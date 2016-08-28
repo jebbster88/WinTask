@@ -1,0 +1,104 @@
+﻿<Window x:Class="WinTask.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinTask"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        Height="805.042"
+        Width="1036.84">
+    <Grid Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Grid.ColumnSpan="2">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Exit"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem x:Name="menuShowCompleted"
+                          Header="Show Completed"
+                          IsCheckable="True" 
+                          IsChecked="{Binding ShowCompleted}" />
+                <MenuItem x:Name="menuShowDeleted"
+                          Header="Show Deleted"
+                          IsCheckable="True"
+                          IsChecked="{Binding ShowDeleted}" />
+            </MenuItem>
+        </Menu>
+        <DataGrid x:Name="taskGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding TasksView, Mode=TwoWay}"
+                  Margin="10,10,0,0"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  SelectionChanged="taskGrid_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding id}"
+                                    Header="ID"
+                                    Width="22"
+                                    CanUserResize="False" />
+                <DataGridTextColumn Binding="{Binding description}"
+                                    Header="Description"
+                                    Width="300"
+                                    CanUserResize="False" />
+                <DataGridTextColumn Binding="{Binding project}"
+                                    Header="Project"
+                                    Width="150"
+                                    CanUserResize="False" />
+                <DataGridTextColumn Binding="{Binding urgency, StringFormat={}{0:#,#.0}}"
+                                    Header="Urg"
+                                    CanUserResize="False"
+                                    Width="30" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <DockPanel Grid.Column="1"
+                   Grid.Row="1">
+            <StackPanel Height="100" DockPanel.Dock="Bottom" Orientation="Vertical" >
+                <Button Width="50" Command="{Binding SelectedItem.SaveCommand, ElementName=taskGrid}" HorizontalAlignment="Left">Save</Button>
+                <Label Content="Pending Changes"/>
+                <TextBlock Margin="5" Text="{Binding SelectedItem.TaskCommand, ElementName=taskGrid}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+            <Grid Name="editGrid"
+              Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label>Description</Label>
+            <TextBox Grid.Column="1"
+                     Text="{Binding SelectedItem.Description, ElementName=taskGrid, Mode=TwoWay}"></TextBox>
+            <Label Grid.Row="1">Project</Label>
+            <ComboBox Name="comboProject" ItemsSource="{Binding Projects}"
+                      SelectedValue="{Binding SelectedItem.Project, ElementName=taskGrid, Mode=TwoWay}"
+                      Grid.Row="1" Grid.Column="1"
+                      />
+                <Label Grid.Row="2">Due</Label>
+                <DatePicker Grid.Row="2"
+                            Grid.Column="2"
+                            SelectedDate="{Binding SelectedItem.Due, ElementName=taskGrid, Mode=TwoWay}"></DatePicker>
+
+                <Label Grid.Row="3">Completed</Label>
+                <CheckBox Grid.Row="3"
+                          Grid.Column="1"
+                          IsChecked="{Binding SelectedItem.Completed, ElementName=taskGrid, Mode=TwoWay}"></CheckBox>
+        </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

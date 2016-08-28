@@ -7,24 +7,57 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
 using System.ComponentModel;
+using System.Globalization;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace WinTask
 {
-    class TaskList
+    class TaskList 
     {
         List<EventHandler<PropertyChangedEventArgs>> changedHandlers =
             new List<EventHandler<PropertyChangedEventArgs>>();
-        public List<string> Projects = new List<string>();
+        private List<string> _projects = new List<string>();
+        public ObservableCollection<string> Projects { get { return new ObservableCollection<string>(_projects); } set { _projects = new List<string>(value); } }
+
+        private bool _showCompleted = false;
+        private bool _showDeleted = false;
+
+        public bool ShowCompleted { get { return _showCompleted; } set { _showCompleted = value; TasksView.Refresh(); } }
+        public bool ShowDeleted { get { return _showDeleted; } set { _showDeleted = value; TasksView.Refresh(); } }
+
+        public ObservableCollection<TaskItem> Tasks { get; private set; }
+        public ICollectionView TasksView { get; set;}
+
         
-        public List<TaskItem> Tasks { get; private set; }
+        private bool TasksFilter(object item)
+        {
+            TaskItem task = item as TaskItem;
+            bool show = false;
+            switch (task.status) 
+            {
+                case "completed":
+                    show = ShowCompleted;
+                    break;
+                case "deleted":
+                    show = ShowDeleted;
+                    break;
+                default:
+                    show = true;
+                    break;
+            }
+            return show;
+        }
 
         public TaskList()
         {
-            Tasks = new List<TaskItem>();
+            Tasks = new ObservableCollection<TaskItem>();
+            TasksView = CollectionViewSource.GetDefaultView(Tasks);
+            TasksView.Filter = TasksFilter;
         }
         public void Update()
         {
-            Tasks.Clear();   
+            Tasks.Clear();
             TaskBinary taskB = new TaskBinary();
             string result = taskB.RunCommand("export");
             Debug.WriteLine(result);
@@ -41,7 +74,7 @@ namespace WinTask
 
                 JsonSerializer serializer = new JsonSerializer();
                 TaskItem task = serializer.Deserialize<TaskItem>(reader);
-
+                Debug.WriteLine(task.tags.Count);
                 AddChild(task);
             }
         }
@@ -49,95 +82,13 @@ namespace WinTask
         {
             // Omitted: error checking, and ensuring newChild isn't already in the list
             Tasks.Add(newChild);
-            if (newChild.project != null && !(Projects.Contains(newChild.project)))
+            if (newChild.project != null && !(_projects.Contains(newChild.project)))
             {
-                Projects.Add(newChild.project);
-                Projects.Sort();
+                _projects.Add(newChild.project);
+                _projects.Sort();
             }
         }
-
     }
 
-    public class TaskItem
-    {
-        public int id { get; set; }
-        public string description { get; set; }
-        public string entry { get; set; }
-        public string modified { get; set; }
-        public string project { get; set; }
-        public string status { get; set; }
-        public string uuid { get; set; }
-        public double urgency { get; set; }
-        
-    }
-    public class EditTaskItem : TaskItem
-    {
-        private enum TaskProp
-        {            
-            Description = 0,
-            Project = 1
-        }
-
-        private SortedDictionary<TaskProp, string> Changes = new SortedDictionary<TaskProp, string>();
-        private string _Description;
-        public string Description
-        {
-            get { return _Description ?? description; }
-            set { _Description = value; ModifyProperty(TaskProp.Description, value); }
-        }
-        private string _Project;
-        public string Project
-        {
-            get { return _Project ?? project; }
-            set { if (value != project) { _Project = value; ModifyProperty(TaskProp.Project, value); } }
-        }
-        public string TaskCommand
-        {
-            get { return "task " + BuildTaskString(); }
-        }
-        public EditTaskItem(TaskItem source)
-        {
-            if(source != null)
-            {
-                id = source.id;
-                description = source.description;
-                entry = source.entry;
-                modified = source.modified;
-                project = source.project;
-                status = source.status;
-                uuid = source.uuid;
-                urgency = source.urgency;
-            }
-        }
-
-        private string BuildTaskString()
-        {
-            string strCommand = "mod " + uuid + " ";
-            foreach (KeyValuePair<TaskProp, string> entry in Changes)
-            {
-                switch (entry.Key)
-                {
-                    case TaskProp.Description:
-                        strCommand += entry.Value + " ";
-                        break;
-                    case TaskProp.Project:
-                        strCommand += "pro:" + entry.Value + " ";
-                        break;
-                    default:
-                        break;
-                }
-            }
-            Debug.WriteLine(strCommand);
-            return strCommand;
-        }
-       
-
-        private void ModifyProperty(TaskProp property, string value)
-        {
-            Changes[property] = value;
-            Debug.WriteLine(Changes.Keys.Count);
-            Debug.WriteLine(BuildTaskString());
-        }
-    }
 
 }
